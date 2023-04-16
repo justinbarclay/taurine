@@ -1,7 +1,7 @@
 use leptos::leptos_dom::ev::{Event, SubmitEvent};
 use leptos::*;
 use serde::{Deserialize, Serialize};
-use serde_wasm_bindgen::to_value;
+use serde_wasm_bindgen::{to_value, from_value};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -86,9 +86,6 @@ where
   let search_files = move |ev: SubmitEvent| {
     ev.prevent_default();
     spawn_local(async move {
-      if name.get().is_empty() {
-        return;
-      }
 
       let args = to_value(&SearchFileArgs {
         location: None,
@@ -96,7 +93,8 @@ where
       })
       .unwrap();
       // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-      let new_msg: Vec<String> = invoke("search_file", args).await.collect();
+      let new_msg: Vec<String> = from_value(invoke("search_file", args).await).unwrap();
+
         set_matching_files.set(new_msg);
     });
   };

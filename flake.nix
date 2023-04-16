@@ -31,6 +31,7 @@
         ];
 
         packages = with pkgs; [
+          materia-theme
           curl
           wget
           pkg-config
@@ -41,6 +42,7 @@
           libsoup
           webkitgtk
           librsvg
+          materia-theme
         ];
 
         target = "wasm32-unknown-unknown";
@@ -67,9 +69,10 @@
         # For `nix develop` (optional, can be skipped):
         devShell = pkgs.mkShell {
           nativeBuildInputs = libraries ++ packages ++ [ toolchain ];
-          buildInputs = with pkgs; [ cargo-nextest webkitgtk librsvg ];
+          buildInputs = with pkgs; [ cargo-nextest webkitgtk librsvg rust-analyzer rustfmt ];
           shellHook =
             ''
+              export XDG_DATA_DIRS=$GSETTINGS_SCHEMAS_PATH:${pkgs.materia-theme}/share
               export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath libraries}:$LD_LIBRARY_PATH
             '';
         };
